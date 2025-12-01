@@ -1,10 +1,18 @@
 import * as model from "../models/products.model.js";
+import {
+  BadRequestError,
+  NotFoundError,
+  ForbiddenError,
+} from "../utils/errors.js";
 
 /**
- * Obtener todos los productos
+ * Obtener todos los productos de un usuario
  */
-export const getAllProducts = async () => {
-  return await model.getAll();
+export const getAllProducts = async (userId) => {
+  if (!userId) {
+    throw new BadRequestError("ID de usuario es requerido");
+  }
+  return await model.getAll(userId);
 };
 
 /**
@@ -12,59 +20,56 @@ export const getAllProducts = async () => {
  */
 export const getProductById = async (id) => {
   const product = await model.getById(id);
-  
   if (!product) {
-    throw new Error("Producto no encontrado");
+    throw new NotFoundError("Producto no encontrado");
   }
-  
   return product;
 };
 
 /**
  * Crear un nuevo producto
  */
-export const createProduct = async (data) => {
-  // Validaciones básicas
-  if (!data.name || !data.price) {
-    throw new Error("Nombre y precio son requeridos");
+export const createProduct = async (data, userId) => {
+  if (!userId) {
+    throw new BadRequestError("ID de usuario es requerido para crear un producto");
   }
-  
-  // Validar que el precio sea un número positivo
-  if (typeof data.price !== "number" || data.price <= 0) {
-    throw new Error("El precio debe ser un número positivo");
-  }
-  
-  return await model.create(data);
+  return await model.create({ ...data, userId });
 };
 
 /**
  * Actualizar un producto
  */
-export const updateProduct = async (id, data) => {
-  // Verificar que el producto existe
+export const updateProduct = async (id, data, userId) => {
   const existingProduct = await model.getById(id);
   if (!existingProduct) {
-    throw new Error("Producto no encontrado");
+    throw new NotFoundError("Producto no encontrado");
   }
-  
-  // Validar precio si se está actualizando
-  if (data.price !== undefined && (typeof data.price !== "number" || data.price <= 0)) {
-    throw new Error("El precio debe ser un número positivo");
+
+  // Verificar que el usuario es el dueño del producto
+  if (existingProduct.userId !== userId) {
+    throw new ForbiddenError("No tienes permiso para modificar este producto");
   }
-  
+
   return await model.update(id, data);
 };
 
 /**
  * Eliminar un producto
  */
-export const deleteProduct = async (id) => {
-  // Verificar que el producto existe
+export const deleteProduct = async (id, userId) => {
   const existingProduct = await model.getById(id);
   if (!existingProduct) {
-    throw new Error("Producto no encontrado");
+    throw new NotFoundError("Producto no encontrado");
   }
-  
+
+  // Verificar que el usuario es el dueño del producto
+  if (existingProduct.userId !== userId) {
+    throw new ForbiddenError("No tienes permiso para eliminar este producto");
+  }
+
   return await model.remove(id);
 };
+
+
+
 

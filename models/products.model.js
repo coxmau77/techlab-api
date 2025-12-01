@@ -1,32 +1,36 @@
-import { 
-  collection, 
-  getDocs, 
-  getDoc, 
-  doc, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc 
+import {
+  collection,
+  getDocs,
+  getDoc,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../config/firebase.js";
 
 const COLLECTION_NAME = "products";
 
 /**
- * Obtener todos los productos
+ * Obtener todos los productos de un usuario
  */
-export const getAll = async () => {
+export const getAll = async (userId) => {
   try {
     const productsCollection = collection(db, COLLECTION_NAME);
-    const snapshot = await getDocs(productsCollection);
-    
+    // Crear una consulta para filtrar por userId
+    const q = query(productsCollection, where("userId", "==", userId));
+    const snapshot = await getDocs(q);
+
     const products = [];
     snapshot.forEach((doc) => {
       products.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
-    
+
     return products;
   } catch (error) {
     console.error("Error al obtener productos:", error);

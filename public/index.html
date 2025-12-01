@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechLab</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="#" id="brand">TechLab</a>
+            <ul id="nav-links">
+                <!-- Para usuarios no autenticados -->
+                <li><a href="#" id="home-nav">Home</a></li>
+                <li><a href="#" id="login-nav">Login</a></li>
+                <li><a href="#" id="register-nav">Registro</a></li>
+                <!-- Para usuarios autenticados -->
+                <li><a href="pages/products.html" id="my-products-nav" class="hidden">Mis Productos</a></li>
+                <li><a href="#" id="logout-nav" class="hidden">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Sección de Bienvenida -->
+        <section id="home-section">
+            <h2>Bienvenido a TechLab</h2>
+            <p>
+                Esta es una aplicación de demostración para gestionar un inventario de productos tecnológicos.
+            </p>
+            <p>
+                Puedes registrarte para obtener una cuenta, iniciar sesión y comenzar a añadir, editar y eliminar tus propios productos.
+            </p>
+            <p>
+                El backend está construido con Node.js, Express y Firebase. El frontend es HTML, CSS y JavaScript puro.
+            </p>
+        </section>
+    </main>
+
+    <!-- Dialogo de Login -->
+    <dialog id="login-dialog">
+        <h2>Login</h2>
+        <form id="login-form" method="dialog">
+            <input type="text" id="login-username" placeholder="Usuario" autocomplete="username" required>
+            <input type="password" id="login-password" placeholder="Contraseña" autocomplete="current-password" required>
+            <button type="submit">Entrar</button>
+            <button type="button" id="close-login-dialog">Cerrar</button>
+        </form>
+    </dialog>
+
+    <!-- Dialogo de Registro -->
+    <dialog id="register-dialog">
+        <h2>Registro</h2>
+        <form id="register-form" method="dialog">
+            <input type="text" id="register-username" placeholder="Usuario" autocomplete="username" required>
+            <input type="email" id="register-email" placeholder="Email" autocomplete="email" required>
+            <input type="password" id="register-password" placeholder="Contraseña" autocomplete="new-password" required>
+            <button type="submit">Registrarse</button>
+            <button type="button" id="close-register-dialog">Cerrar</button>
+        </form>
+    </dialog>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
