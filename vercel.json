@@ -4,10 +4,6 @@
     {
       "src": "index.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
     }
   ],
   "rewrites": [
@@ -18,10 +14,17 @@
     {
       "source": "/auth/(.*)",
       "destination": "/index.js"
-    },
+    }
+  ],
+  "headers": [
     {
       "source": "/(.*)",
-      "destination": "/public/$1"
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=1, stale-while-revalidate"
+        }
+      ]
     }
   ]
 }
