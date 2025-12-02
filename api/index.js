@@ -4,11 +4,11 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 
 // Importar rutas
-import productsRoutes from "./routes/products.routes.js";
-import authRoutes from "./routes/auth.routes.js";
+import productsRoutes from "../routes/products.routes.js";
+import authRoutes from "../routes/auth.routes.js";
 
-import { errorHandler } from "./middlewares/error.handler.js";
-import { NotFoundError } from "./utils/errors.js";
+import { errorHandler } from "../middlewares/error.handler.js";
+import { NotFoundError } from "../utils/errors.js";
 
 // Cargar variables de entorno
 dotenv.config();
