@@ -2,10 +2,20 @@
   "version": 2,
   "builds": [
     {
-      "src": "api",
+      "src": "api/index.js",
       "use": "@vercel/node",
       "config": {
-        "handler": "index.js"
+        "includeFiles": [
+          "api/config/**",
+          "api/controllers/**",
+          "api/middlewares/**",
+          "api/models/**",
+          "api/routes/**",
+          "api/services/**",
+          "api/utils/**",
+          "package.json",
+          "package-lock.json"
+        ]
       }
     },
     {
@@ -23,11 +33,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api"
+      "destination": "/api/index.js"
     },
     {
       "source": "/auth/(.*)",
-      "destination": "/api"
+      "destination": "/api/index.js"
     },
     {
       "source": "/(.*)",
