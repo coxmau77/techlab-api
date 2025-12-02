@@ -1,47 +1,52 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Productos - TechLab</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="shortcut icon" href="#" type="image/x-icon">
 </head>
+
 <body>
     <header>
         <nav>
-            <a href="../index.html" id="brand">TechLab</a>
+            <a href="#" id="brand">TechLab</a>
             <ul id="nav-links">
+                <li><a href="#" id="home-nav">Home</a></li>
+                <li><a href="#" id="my-products-nav">Mis Productos</a></li>
                 <li><a href="#" id="logout-nav">Logout</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <!-- Sección de Mis Productos -->
         <section id="products-section">
-            <div class="section-header">
-                <h2>Mis Productos</h2>
-                <button id="add-product-btn">Añadir Nuevo Producto</button>
-            </div>
-            <div id="products-list">
-                <!-- Los productos del usuario se cargarán aquí -->
+            <h2>Mis Productos</h2>
+            <button id="add-product-btn">Añadir Producto</button>
+
+            <div id="products-container">
+                <!-- Los productos se cargarán aquí dinámicamente -->
             </div>
         </section>
     </main>
 
-    <!-- Dialogo para Añadir/Editar Producto -->
+    <!-- Dialogo para añadir/editar producto -->
     <dialog id="product-dialog">
-        <h2 id="form-title">Añadir Nuevo Producto</h2>
+        <h2 id="dialog-title">Añadir Producto</h2>
         <form id="product-form" method="dialog">
             <input type="hidden" id="product-id">
             <input type="text" id="product-name" placeholder="Nombre del producto" required>
-            <textarea id="product-description" placeholder="Descripción del producto"></textarea>
-            <input type="number" id="product-price" placeholder="Precio" step="0.01" required>
-            <button type="submit" id="save-product-btn">Guardar</button>
-            <button type="button" id="close-product-dialog" class="btn-secondary">Cerrar</button>
+            <input type="text" id="product-category" placeholder="Categoría" required>
+            <input type="number" id="product-price" placeholder="Precio" min="0" step="0.01" required>
+            <textarea id="product-description" placeholder="Descripción" required></textarea>
+            <button type="submit">Guardar</button>
+            <button type="button" id="close-product-dialog">Cancelar</button>
         </form>
     </dialog>
 
     <script src="../js/products.js"></script>
 </body>
+
 </html>

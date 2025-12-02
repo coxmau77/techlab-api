@@ -15,5 +15,3 @@ router.post("/register", registerValidator, validate, controller.register);
 router.post("/login", loginValidator, validate, controller.login);
 
 export default router;
-
-

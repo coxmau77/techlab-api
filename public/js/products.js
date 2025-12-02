@@ -1,167 +1,176 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_URL = "";
+  const API_URL = "/api";
   const token = localStorage.getItem("token");
 
-  // --- AUTH CHECK ---
-  // Si no hay token, redirigir a la página de inicio
   if (!token) {
-    window.location.href = "../index.html"; // Ajustar la ruta de redirección
-    return;
+    window.location.href = "/";
   }
 
   // --- ELEMENTOS DEL DOM ---
-  const productsList = document.getElementById("products-list");
-  const productDialog = document.getElementById("product-dialog"); // Nuevo: el diálogo
-  const addProductBtn = document.getElementById("add-product-btn"); // Nuevo: botón para añadir
-  const closeProductDialog = document.getElementById("close-product-dialog"); // Nuevo: botón de cierre del diálogo
-
+  const addProductBtn = document.getElementById("add-product-btn");
+  const productDialog = document.getElementById("product-dialog");
+  const closeProductDialog = document.getElementById("close-product-dialog");
   const productForm = document.getElementById("product-form");
-  const formTitle = document.getElementById("form-title");
-  const productIdInput = document.getElementById("product-id");
-  const productNameInput = document.getElementById("product-name");
-  const productDescInput = document.getElementById("product-description");
-  const productPriceInput = document.getElementById("product-price");
-  const logoutNav = document.getElementById("logout-nav");
+  const productsContainer = document.getElementById("products-container");
 
-  // --- LOGOUT ---
-  logoutNav.addEventListener("click", (e) => {
-    e.preventDefault();
-    localStorage.removeItem("token");
-    window.location.href = "../index.html"; // Ajustar la ruta de redirección
+  // --- MANEJO DE DIÁLOGOS ---
+  addProductBtn.addEventListener("click", () => {
+    document.getElementById("dialog-title").textContent = "Añadir Producto";
+    productForm.reset();
+    productDialog.showModal();
   });
 
-  // --- FUNCIONES API ---
-  const fetchApi = async (endpoint, options = {}) => {
-    options.headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      ...options.headers,
-    };
-    const response = await fetch(`${API_URL}${endpoint}`, options);
-    if (response.status === 401 || response.status === 403) {
-      // Token inválido o expirado
-      localStorage.removeItem("token");
-      window.location.href = "../index.html"; // Ajustar la ruta de redirección
-    }
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("API Error:", errorData); // Log the full error object
-      throw new Error(errorData.message || "Error en la petición a la API");
-    }
-    return response.json();
-  };
+  closeProductDialog.addEventListener("click", () => {
+    productDialog.close();
+  });
 
-  // --- LÓGICA DE PRODUCTOS ---
+  // --- MANEJO DE PRODUCTOS ---
   const fetchProducts = async () => {
     try {
-      const { data } = await fetchApi("/api/products");
-      renderProducts(data);
+      const response = await fetch(`${API_URL}/products`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Error al cargar productos");
+
+      const products = await response.json();
+      renderProducts(products.data);
     } catch (error) {
-      alert(`Error al cargar productos: ${error.message}`);
+      console.error("Error:", error);
+      alert(`Error: ${error.message}`);
     }
   };
 
   const renderProducts = (products) => {
-    productsList.innerHTML = "";
+    productsContainer.innerHTML = "";
+
     if (products.length === 0) {
-      productsList.innerHTML = "<p>No tienes productos creados todavía.</p>";
+      productsContainer.innerHTML =
+        "<p>No tienes productos aún. ¡Añade tu primer producto!</p>";
       return;
     }
+
     products.forEach((product) => {
-      const productCard = document.createElement("div");
-      productCard.className = "product-card";
-      productCard.innerHTML = `
+      const productElement = document.createElement("div");
+      productElement.className = "product-card";
+      productElement.innerHTML = `
         <h3>${product.name}</h3>
-        <p>${product.description || ""}</p>
-        <p class="price">$${product.price}</p>
+        <p><strong>Categoría:</strong> ${product.category}</p>
+        <p><strong>Precio:</strong> $${product.price}</p>
+        <p>${product.description}</p>
         <div class="product-actions">
           <button class="edit-btn" data-id="${product.id}">Editar</button>
           <button class="delete-btn" data-id="${product.id}">Eliminar</button>
         </div>
       `;
-      productsList.appendChild(productCard);
+      productsContainer.appendChild(productElement);
+    });
+
+    // Añadir event listeners a los botones
+    document.querySelectorAll(".edit-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const productId = e.target.getAttribute("data-id");
+        editProduct(productId);
+      });
+    });
+
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const productId = e.target.getAttribute("data-id");
+        deleteProduct(productId);
+      });
     });
   };
 
-  // --- MANEJO DEL FORMULARIO (CREAR/EDITAR) ---
-  productForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const id = productIdInput.value;
-    const productData = {
-      name: productNameInput.value,
-      description: productDescInput.value,
-      price: parseFloat(productPriceInput.value),
-    };
-
+  const editProduct = async (productId) => {
     try {
-      if (id) {
-        // Actualizar producto
-        await fetchApi(`/api/products/${id}`, {
-          method: "PUT",
-          body: JSON.stringify(productData),
-        });
-        alert("Producto actualizado exitosamente.");
-      } else {
-        // Crear producto
-        await fetchApi("/api/products", {
-          method: "POST",
-          body: JSON.stringify(productData),
-        });
-        alert("Producto creado exitosamente.");
-      }
-      resetForm(); // Cierra el diálogo y resetea el formulario
-      fetchProducts();
-    } catch (error) {
-      alert(`Error al guardar producto: ${error.message}`);
-    }
-  });
+      const response = await fetch(`${API_URL}/products/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-  const resetForm = () => {
-    formTitle.textContent = "Añadir Nuevo Producto";
-    productIdInput.value = "";
-    productForm.reset();
-    productDialog.close(); // Nuevo: cierra el diálogo
+      if (!response.ok) throw new Error("Error al cargar el producto");
+
+      const product = await response.json();
+
+      // Llenar el formulario con los datos del producto
+      document.getElementById("product-id").value = product.data.id;
+      document.getElementById("product-name").value = product.data.name;
+      document.getElementById("product-category").value = product.data.category;
+      document.getElementById("product-price").value = product.data.price;
+      document.getElementById("product-description").value =
+        product.data.description;
+
+      document.getElementById("dialog-title").textContent = "Editar Producto";
+      productDialog.showModal();
+    } catch (error) {
+      console.error("Error:", error);
+      alert(`Error: ${error.message}`);
+    }
   };
 
-  // --- MANEJO DE DIÁLOGO ---
-  addProductBtn.addEventListener("click", () => {
-    resetForm(); // Limpia el formulario antes de abrir para añadir
-    productDialog.showModal();
-  });
+  const deleteProduct = async (productId) => {
+    if (!confirm("¿Estás seguro de que quieres eliminar este producto?"))
+      return;
 
-  closeProductDialog.addEventListener("click", () => {
-    resetForm(); // Limpia y cierra el formulario
-  });
+    try {
+      const response = await fetch(`${API_URL}/products/${productId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-  // --- MANEJO DE ACCIONES (EDITAR/ELIMINAR) ---
-  productsList.addEventListener("click", async (e) => {
-    const target = e.target;
-    const id = target.dataset.id;
+      if (!response.ok) throw new Error("Error al eliminar el producto");
 
-    if (target.classList.contains("delete-btn")) {
-      if (confirm("¿Estás seguro de que quieres eliminar este producto?")) {
-        try {
-          await fetchApi(`/api/products/${id}`, { method: "DELETE" });
-          alert("Producto eliminado.");
-          fetchProducts();
-        } catch (error) {
-          alert(`Error al eliminar: ${error.message}`);
-        }
-      }
+      alert("Producto eliminado exitosamente");
+      fetchProducts();
+    } catch (error) {
+      console.error("Error:", error);
+      alert(`Error: ${error.message}`);
     }
+  };
 
-    if (target.classList.contains("edit-btn")) {
-      try {
-        const { data: product } = await fetchApi(`/api/products/${id}`);
-        formTitle.textContent = "Editar Producto";
-        productIdInput.value = product.id;
-        productNameInput.value = product.name;
-        productDescInput.value = product.description || "";
-        productPriceInput.value = product.price;
-        productDialog.showModal(); // Nuevo: abre el diálogo para editar
-      } catch (error) {
-        alert(`Error al cargar producto para editar: ${error.message}`);
-      }
+  // --- MANEJO DE FORMULARIO ---
+  productForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const productId = document.getElementById("product-id").value;
+    const name = document.getElementById("product-name").value;
+    const category = document.getElementById("product-category").value;
+    const price = document.getElementById("product-price").value;
+    const description = document.getElementById("product-description").value;
+
+    try {
+      const method = productId ? "PUT" : "POST";
+      const url = productId
+        ? `${API_URL}/products/${productId}`
+        : `${API_URL}/products`;
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name, category, price, description }),
+      });
+
+      if (!response.ok) throw new Error("Error al guardar el producto");
+
+      alert(
+        productId
+          ? "Producto actualizado exitosamente"
+          : "Producto añadido exitosamente"
+      );
+      productDialog.close();
+      fetchProducts();
+    } catch (error) {
+      console.error("Error:", error);
+      alert(`Error: ${error.message}`);
     }
   });
 

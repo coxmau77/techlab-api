@@ -34,5 +34,3 @@ export const login = catchAsync(async (req, res, next) => {
     },
   });
 });
-
-

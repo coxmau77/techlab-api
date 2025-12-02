@@ -75,8 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ username, email, password }),
       });
       const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.message || "Error en el registro");
+      if (!response.ok) throw new Error(data.message || "Error en el registro");
 
       alert("¡Registro exitoso! Por favor, inicia sesión.");
       registerForm.reset();
