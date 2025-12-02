@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_URL = "";
+  const API_URL = "/api";
 
   // --- ELEMENTOS DEL DOM ---
   // Navegación
