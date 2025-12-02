@@ -6,15 +6,15 @@
       "use": "@vercel/node",
       "config": {
         "includeFiles": [
-          "api/config/**",
-          "api/controllers/**",
-          "api/middlewares/**",
-          "api/models/**",
-          "api/routes/**",
-          "api/services/**",
-          "api/utils/**",
-          "package.json",
-          "package-lock.json"
+          "config/**",
+          "controllers/**",
+          "middlewares/**",
+          "models/**",
+          "routes/**",
+          "services/**",
+          "utils/**",
+          "../package.json",
+          "../package-lock.json"
         ]
       }
     },
