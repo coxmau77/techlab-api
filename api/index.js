@@ -26,7 +26,7 @@ app.use(express.static("public"));
 
 // Rutas
 app.use("/api/products", productsRoutes);
-app.use("/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res, next) => {
