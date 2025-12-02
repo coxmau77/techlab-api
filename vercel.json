@@ -2,29 +2,22 @@
   "version": 2,
   "builds": [
     {
-      "src": "index.js",
+      "src": "api/index.js",
       "use": "@vercel/node"
     }
   ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/index.js"
+      "destination": "/api/index.js"
     },
     {
       "source": "/auth/(.*)",
-      "destination": "/index.js"
-    }
-  ],
-  "headers": [
+      "destination": "/api/index.js"
+    },
     {
       "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "s-maxage=1, stale-while-revalidate"
-        }
-      ]
+      "destination": "/public/$1"
     }
   ]
 }

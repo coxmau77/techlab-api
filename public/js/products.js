@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_URL = "http://localhost:3000";
+  const API_URL = "";
   const token = localStorage.getItem("token");
 
   // --- AUTH CHECK ---
